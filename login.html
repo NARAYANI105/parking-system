@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parking System Login</title>
+</head>
+<body style="text-align:center; font-family: Arial; margin-top:100px;">
+
+    <h2>Parking System Login</h2>
+
+    <form onsubmit="return validateLogin()">
+        <input type="text" id="username" placeholder="Enter Username" required><br><br>
+        <input type="password" id="password" placeholder="Enter Password" required><br><br>
+        <button type="submit">Login</button>
+    </form>
+
+    <p id="error" style="color:red;"></p>
+
+    <script>
+        function validateLogin() {
+            var user = document.getElementById("username").value;
+            var pass = document.getElementById("password").value;
+
+            if(user === "rit" && pass === "1234") {
+                alert("Login Successful");
+                return true;
+            } else {
+                document.getElementById("error").innerText = "Invalid Username or Password";
+                return false;
+            }
+        }
+    </script>
+
+</body>
+</html>
