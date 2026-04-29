@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAMCO Institute - Classroom Monitoring System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <!-- Animated Background -->
+        <div class="animated-bg">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+
+        <!-- Login Card -->
+        <div class="login-card">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h1>RAMCO INSTITUTE</h1>
+                <p>Classroom Monitoring System</p>
+            </div>
+
+            <!-- User Type Selection -->
+            <div class="user-type-selector">
+                <button class="type-btn active" data-type="student">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Student</span>
+                </button>
+                <button class="type-btn" data-type="staff">
+                    <i class="fas fa-chalkboard-user"></i>
+                    <span>Staff</span>
+                </button>
+                <button class="type-btn" data-type="admin">
+                    <i class="fas fa-shield"></i>
+                    <span>Admin</span>
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i> Email or ID
+                    </label>
+                    <input type="text" id="email" placeholder="Enter your email or ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Enter password" required>
+                        <button type="button" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="checkbox">
+                        <input type="checkbox" id="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <span>Sign In</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>Don't have an account? <a href="#signup">Contact Administrator</a></p>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Password toggle
+        document.querySelector('.toggle-password').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.add('fa-eye');
+                icon.classList.remove('fa-eye-slash');
+            }
+        });
+
+        // User type selection
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('loginForm').dataset.userType = this.dataset.type;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Classroom Monitoring System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-building"></i>
+            <span>RAMCO CMS</span>
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <a href="classrooms.html">
+                <i class="fas fa-door-open"></i>
+                Classrooms
+            </a>
+            <a href="equipment.html">
+                <i class="fas fa-tools"></i>
+                Equipment
+            </a>
+            <a href="service-history.html">
+                <i class="fas fa-history"></i>
+                Services
+            </a>
+            <button class="logout-btn" onclick="authSystem.logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard.html" class="sidebar-link active">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Overview</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="classrooms.html" class="sidebar-link">
+                        <i class="fas fa-list"></i>
+                        <span>All Classrooms</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="equipment.html" class="sidebar-link">
+                        <i class="fas fa-laptop"></i>
+                        <span>Equipment Tracking</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="service-history.html" class="sidebar-link">
+                        <i class="fas fa-wrench"></i>
+                        <span>Service History</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link">
+                        <i class="fas fa-bell"></i>
+                        <span>Reminders</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p>Welcome to RAMCO Institute Classroom Monitoring System</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Total Classrooms</span>
+                        <div class="stat-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalClassrooms">40</div>
+                    <div class="stat-change positive">↑ All active</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Available Now</span>
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="availableClassrooms">24</div>
+                    <div class="stat-change positive">↑ 60% availability</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Equipment Issues</span>
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="equipmentIssues">3</div>
+                    <div class="stat-change negative">↓ 2 need service</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Battery Reminders</span>
+                        <div class="stat-icon">
+                            <i class="fas fa-battery-three-quarters"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="batteryReminders">5</div>
+                    <div class="stat-change">2 due soon</div>
+                </div>
+            </div>
+
+            <!-- Featured Classrooms -->
+            <div style="margin-bottom: 30px;">
+                <div class="page-header">
+                    <h2 style="font-size: 22px; margin-bottom: 0;">Featured Classrooms</h2>
+                </div>
+                <div class="classroom-grid" id="featuredClassrooms">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: var(--shadow);">
+                <h2 style="margin-bottom: 20px; font-size: 22px; color: var(--dark);">Quick Actions</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <button class="btn btn-primary" onclick="window.location.href='equipment.html#add-equipment'">
+                        <i class="fas fa-plus"></i>
+                        Add Equipment
+                    </button>
+                    <button class="btn btn-primary" onclick="window.location.href='service-history.html#add-service'">
+                        <i class="fas fa-wrench"></i>
+                        Record Service
+                    </button>
+                    <button class="btn btn-primary" onclick="openClassroomModal()">
+                        <i class="fas fa-plus"></i>
+                        Add Classroom
+                    </button>
+                    <button class="btn btn-primary" onclick="alert('Report generated')">
+                        <i class="fas fa-download"></i>
+                        Download Report
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Modal for Adding Classroom -->
+    <div id="classroomModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Classroom</h2>
+                <button class="close-btn" onclick="closeModal('classroomModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="classroomForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-door-open"></i> Classroom Number</label>
+                        <input type="text" placeholder="e.g., A1L03" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-layer-group"></i> Block</label>
+                        <select required>
+                            <option>A Block</option>
+                            <option>B Block</option>
+                            <option>C Block</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-book"></i> Allotted To</label>
+                        <input type="text" placeholder="Department/Year" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-chair"></i> Number of Benches</label>
+                        <input type="number" placeholder="50" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('classroomModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveClassroom()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+        // Protect page
+        if (!authSystem.isAuthenticated()) {
+            window.location.href = 'index.html';
+        }
+
+        // Load dashboard on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboard();
+        });
+
+        function openClassroomModal() {
+            document.getElementById('classroomModal').classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function saveClassroom() {
+            alert('Classroom saved successfully!');
+            closeModal('classroomModal');
+        }
+
+        window.onclick = function(event) {
+            const modal = event.target;
+            if (modal.classList.contains('modal')) {
+                modal.classList.remove('show');
+            }
+        };
+    </script>
+</body>
+</html>

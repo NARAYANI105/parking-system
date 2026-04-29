@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classrooms - Classroom Monitoring System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-building"></i>
+            <span>RAMCO CMS</span>
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <a href="classrooms.html" class="active-nav">
+                <i class="fas fa-door-open"></i>
+                Classrooms
+            </a>
+            <a href="equipment.html">
+                <i class="fas fa-tools"></i>
+                Equipment
+            </a>
+            <a href="service-history.html">
+                <i class="fas fa-history"></i>
+                Services
+            </a>
+            <button class="logout-btn" onclick="authSystem.logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard.html" class="sidebar-link">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Overview</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="classrooms.html" class="sidebar-link active">
+                        <i class="fas fa-list"></i>
+                        <span>All Classrooms</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="filterClassrooms('A')">
+                        <i class="fas fa-layer-group"></i>
+                        <span>A Block</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="filterClassrooms('B')">
+                        <i class="fas fa-layer-group"></i>
+                        <span>B Block</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="filterClassrooms('C')">
+                        <i class="fas fa-layer-group"></i>
+                        <span>C Block</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="filterByStatus('available')">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Available</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="filterByStatus('occupied')">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Occupied</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>All Classrooms</h1>
+                <p>Manage and monitor all classroom facilities</p>
+            </div>
+
+            <!-- Filter & Search -->
+            <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; box-shadow: var(--shadow); display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                    <input type="text" placeholder="🔍 Search classroom..." id="searchInput" style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px;" onkeyup="searchClassrooms()">
+                </div>
+                <select id="blockFilter" style="padding: 12px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer;">
+                    <option value="">All Blocks</option>
+                    <option value="A">A Block</option>
+                    <option value="B">B Block</option>
+                    <option value="C">C Block</option>
+                </select>
+                <select id="sideFilter" style="padding: 12px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer;">
+                    <option value="">All Sides</option>
+                    <option value="left">Left Side</option>
+                    <option value="right">Right Side</option>
+                </select>
+                <button class="btn btn-primary" onclick="openAddClassroomModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Classroom
+                </button>
+            </div>
+
+            <!-- Classrooms Grid -->
+            <div class="classroom-grid" id="classroomsGrid">
+                <!-- Populated by JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Edit Classroom Modal -->
+    <div id="editClassroomModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Classroom</h2>
+                <button class="close-btn" onclick="closeModal('editClassroomModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editClassroomForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-door-open"></i> Classroom Number</label>
+                        <input type="text" id="editClassroomNumber" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-book"></i> Allotted To</label>
+                        <input type="text" id="editAllottedTo" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-chair"></i> Number of Benches (Available)</label>
+                        <input type="number" id="editBenches" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-video"></i> Projector Status</label>
+                        <select id="editProjectorStatus" required>
+                            <option value="working">Working</option>
+                            <option value="not-working">Not Working</option>
+                            <option value="maintenance">Under Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-desktop"></i> CPU Status</label>
+                        <select id="editCpuStatus" required>
+                            <option value="working">Working</option>
+                            <option value="not-working">Not Working</option>
+                            <option value="maintenance">Under Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user-check"></i> Current Status</label>
+                        <select id="editStatus" required>
+                            <option value="available">Available</option>
+                            <option value="occupied">Occupied</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editClassroomModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="updateClassroom()">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        if (!authSystem.isAuthenticated()) {
+            window.location.href = 'index.html';
+        }
+
+        const classrooms = [
+            // A Block Left
+            { id: 'A1L03', block: 'A', floor: 1, side: 'left', allottedTo: 'First Year CSE B', benches: 45, benchesWorking: 43, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'A1L04', block: 'A', floor: 1, side: 'left', allottedTo: 'First Year AIML', benches: 45, benchesWorking: 45, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'A2L05', block: 'A', floor: 2, side: 'left', allottedTo: 'First Year MECH', benches: 50, benchesWorking: 48, projector: 'not-working', cpu: 'working', status: 'occupied' },
+            { id: 'A2L04', block: 'A', floor: 2, side: 'left', allottedTo: 'First Year CSE A', benches: 45, benchesWorking: 45, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'A2L03', block: 'A', floor: 2, side: 'left', allottedTo: 'First Year IT', benches: 45, benchesWorking: 45, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'A2L02', block: 'A', floor: 2, side: 'left', allottedTo: 'First Year ECE B', benches: 45, benchesWorking: 42, projector: 'working', cpu: 'not-working', status: 'available' },
+            { id: 'A2L01', block: 'A', floor: 2, side: 'left', allottedTo: 'First Year ECE A', benches: 45, benchesWorking: 45, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'A2R02', block: 'A', floor: 2, side: 'right', allottedTo: 'Third Year CSE A', benches: 40, benchesWorking: 40, projector: 'working', cpu: 'working', status: 'occupied' },
+            // B Block Left
+            { id: 'B0L01', block: 'B', floor: 0, side: 'left', allottedTo: 'First Year AD A', benches: 50, benchesWorking: 50, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'B0L02', block: 'B', floor: 0, side: 'left', allottedTo: 'First Year AD B', benches: 50, benchesWorking: 48, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'B0L03', block: 'B', floor: 0, side: 'left', allottedTo: 'First Year CSBS', benches: 45, benchesWorking: 45, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'B1L05', block: 'B', floor: 1, side: 'left', allottedTo: 'First Year EEE', benches: 50, benchesWorking: 47, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'B1L04', block: 'B', floor: 1, side: 'left', allottedTo: 'First Year CSE C', benches: 45, benchesWorking: 45, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'B1L02', block: 'B', floor: 1, side: 'left', allottedTo: 'First Year Civil', benches: 40, benchesWorking: 40, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'B3L05', block: 'B', floor: 3, side: 'left', allottedTo: 'Final Year AD A', benches: 30, benchesWorking: 30, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'B3L04', block: 'B', floor: 3, side: 'left', allottedTo: 'Third Year CIVIL', benches: 35, benchesWorking: 35, projector: 'working', cpu: 'maintenance', status: 'available' },
+            { id: 'B3L03', block: 'B', floor: 3, side: 'left', allottedTo: 'Second Year CIVIL', benches: 35, benchesWorking: 33, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'B3L02', block: 'B', floor: 3, side: 'left', allottedTo: 'Final Year CSBS', benches: 30, benchesWorking: 30, projector: 'working', cpu: 'working', status: 'available' },
+            // B Block Right
+            { id: 'B3R02', block: 'B', floor: 3, side: 'right', allottedTo: 'Second Year EEE', benches: 40, benchesWorking: 40, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'B3R03', block: 'B', floor: 3, side: 'right', allottedTo: 'Third Year EEE', benches: 35, benchesWorking: 35, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'B3R04', block: 'B', floor: 3, side: 'right', allottedTo: 'Third Year CSBS', benches: 30, benchesWorking: 30, projector: 'not-working', cpu: 'working', status: 'available' },
+            { id: 'B3R05', block: 'B', floor: 3, side: 'right', allottedTo: 'Second Year CSBS', benches: 40, benchesWorking: 38, projector: 'working', cpu: 'working', status: 'occupied' },
+            // C Block Left
+            { id: 'C2L05', block: 'C', floor: 2, side: 'left', allottedTo: 'Second Year MECH', benches: 45, benchesWorking: 45, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'C2L04', block: 'C', floor: 2, side: 'left', allottedTo: 'Third Year MECH', benches: 40, benchesWorking: 40, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'C2L03', block: 'C', floor: 2, side: 'left', allottedTo: 'Final Year MECH', benches: 30, benchesWorking: 30, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'C2L02', block: 'C', floor: 2, side: 'left', allottedTo: 'Third Year IT', benches: 40, benchesWorking: 40, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'C2L01', block: 'C', floor: 2, side: 'left', allottedTo: 'Second Year IT', benches: 45, benchesWorking: 43, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'C3L01', block: 'C', floor: 3, side: 'left', allottedTo: 'Third Year AD A', benches: 35, benchesWorking: 35, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'C3L02', block: 'C', floor: 3, side: 'left', allottedTo: 'Third Year AD B', benches: 35, benchesWorking: 35, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'C3L03', block: 'C', floor: 3, side: 'left', allottedTo: 'Second Year AD A', benches: 40, benchesWorking: 40, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'C3L04', block: 'C', floor: 3, side: 'left', allottedTo: 'Second Year AD B', benches: 40, benchesWorking: 40, projector: 'working', cpu: 'working', status: 'occupied' },
+            // C Block Right
+            { id: 'C3R01', block: 'C', floor: 3, side: 'right', allottedTo: 'Second Year ECE-A', benches: 40, benchesWorking: 40, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'C3R02', block: 'C', floor: 3, side: 'right', allottedTo: 'Second Year ECE-B', benches: 40, benchesWorking: 40, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'C3R03', block: 'C', floor: 3, side: 'right', allottedTo: 'Third Year ECE-A', benches: 35, benchesWorking: 35, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'C3R04', block: 'C', floor: 3, side: 'right', allottedTo: 'Third Year ECE-B', benches: 35, benchesWorking: 33, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'C3R05', block: 'C', floor: 3, side: 'right', allottedTo: 'Final Year ECE-A', benches: 30, benchesWorking: 30, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'C2R04', block: 'C', floor: 2, side: 'right', allottedTo: 'Second Year CSE A', benches: 45, benchesWorking: 45, projector: 'working', cpu: 'working', status: 'occupied' },
+            { id: 'C2R05', block: 'C', floor: 2, side: 'right', allottedTo: 'Second Year CSE B', benches: 45, benchesWorking: 45, projector: 'working', cpu: 'working', status: 'available' },
+            { id: 'C2R06', block: 'C', floor: 2, side: 'right', allottedTo: 'Second Year CSE C', benches: 45, benchesWorking: 42, projector: 'working', cpu: 'working', status: 'available' }
+        ];
+
+        localStorage.setItem('classrooms', JSON.stringify(classrooms));
+
+        function displayClassrooms(data = classrooms) {
+            const grid = document.getElementById('classroomsGrid');
+            grid.innerHTML = data.map(cr => `
+                <div class="classroom-card">
+                    <div class="classroom-header">
+                        <div>
+                            <div class="classroom-number">${cr.id}</div>
+                            <small>${cr.block} Block | Floor ${cr.floor} | ${cr.side.charAt(0).toUpperCase() + cr.side.slice(1)} Side</small>
+                        </div>
+                        <div class="classroom-status">
+                            <span class="status-dot ${cr.status}"></span>
+                            <span>${cr.status.toUpperCase()}</span>
+                        </div>
+                    </div>
+                    <div class="classroom-body">
+                        <div class="classroom-details">
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-book"></i> Allotted To</span>
+                                <span class="detail-value">${cr.allottedTo}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-chair"></i> Benches</span>
+                                <span class="detail-value">${cr.benchesWorking}/${cr.benches}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-video"></i> Projector</span>
+                                <span class="detail-value ${cr.projector === 'working' ? 'success' : cr.projector === 'not-working' ? 'danger' : 'warning'}">
+                                    ${cr.projector.toUpperCase().replace('-', ' ')}
+                                </span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-desktop"></i> CPU</span>
+                                <span class="detail-value ${cr.cpu === 'working' ? 'success' : cr.cpu === 'not-working' ? 'danger' : 'warning'}">
+                                    ${cr.cpu.toUpperCase().replace('-', ' ')}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="classroom-actions">
+                            <button class="action-btn primary" onclick="editClassroom('${cr.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn secondary" onclick="viewClassroomDetails('${cr.id}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchClassrooms() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = classrooms.filter(cr => 
+                cr.id.toLowerCase().includes(query) ||
+                cr.allottedTo.toLowerCase().includes(query)
+            );
+            displayClassrooms(filtered);
+        }
+
+        function filterClassrooms(block) {
+            const filtered = classrooms.filter(cr => cr.block === block);
+            displayClassrooms(filtered);
+        }
+
+        function filterByStatus(status) {
+            const filtered = classrooms.filter(cr => cr.status === status);
+            displayClassrooms(filtered);
+        }
+
+        function editClassroom(classroomId) {
+            const classroom = classrooms.find(cr => cr.id === classroomId);
+            if (classroom) {
+                document.getElementById('editClassroomNumber').value = classroom.id;
+                document.getElementById('editAllottedTo').value = classroom.allottedTo;
+                document.getElementById('editBenches').value = classroom.benchesWorking;
+                document.getElementById('editProjectorStatus').value = classroom.projector;
+                document.getElementById('editCpuStatus').value = classroom.cpu;
+                document.getElementById('editStatus').value = classroom.status;
+                document.getElementById('editClassroomModal').dataset.classroomId = classroomId;
+                document.getElementById('editClassroomModal').classList.add('show');
+            }
+        }
+
+        function updateClassroom() {
+            const classroomId = document.getElementById('editClassroomModal').dataset.classroomId;
+            const classroom = classrooms.find(cr => cr.id === classroomId);
+            if (classroom) {
+                classroom.allottedTo = document.getElementById('editAllottedTo').value;
+                classroom.benchesWorking = parseInt(document.getElementById('editBenches').value);
+                classroom.projector = document.getElementById('editProjectorStatus').value;
+                classroom.cpu = document.getElementById('editCpuStatus').value;
+                classroom.status = document.getElementById('editStatus').value;
+                localStorage.setItem('classrooms', JSON.stringify(classrooms));
+                displayClassrooms();
+                closeModal('editClassroomModal');
+                showToast('Classroom updated successfully!', 'success');
+            }
+        }
+
+        function viewClassroomDetails(classroomId) {
+            alert(`Viewing details for classroom ${classroomId}`);
+        }
+
+        function openAddClassroomModal() {
+            alert('Add new classroom feature coming soon!');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        displayClassrooms();
+    </script>
+</body>
+</html>

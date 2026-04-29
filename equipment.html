@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Tracking - Classroom Monitoring System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-building"></i>
+            <span>RAMCO CMS</span>
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <a href="classrooms.html">
+                <i class="fas fa-door-open"></i>
+                Classrooms
+            </a>
+            <a href="equipment.html" class="active-nav">
+                <i class="fas fa-tools"></i>
+                Equipment
+            </a>
+            <a href="service-history.html">
+                <i class="fas fa-history"></i>
+                Services
+            </a>
+            <button class="logout-btn" onclick="authSystem.logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard.html" class="sidebar-link">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Overview</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="equipment.html" class="sidebar-link active">
+                        <i class="fas fa-laptop"></i>
+                        <span>All Equipment</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="filterByType('projector')">
+                        <i class="fas fa-video"></i>
+                        <span>Projectors</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="filterByType('cpu')">
+                        <i class="fas fa-desktop"></i>
+                        <span>CPUs</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="filterByType('battery')">
+                        <i class="fas fa-battery-full"></i>
+                        <span>Batteries</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>Equipment Tracking</h1>
+                <p>Monitor and manage all classroom equipment</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Total Equipment</span>
+                        <div class="stat-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalEquipment">120</div>
+                    <div class="stat-change positive">All tracked</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Working</span>
+                        <div class="stat-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="workingEquipment">115</div>
+                    <div class="stat-change positive">95.8% operational</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Needs Service</span>
+                        <div class="stat-icon">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="needsService">3</div>
+                    <div class="stat-change warning">Action required</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Battery Reminders</span>
+                        <div class="stat-icon">
+                            <i class="fas fa-battery-three-quarters"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="batteryReminders">5</div>
+                    <div class="stat-change">Due this month</div>
+                </div>
+            </div>
+
+            <!-- Filter & Add -->
+            <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; box-shadow: var(--shadow); display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                    <input type="text" placeholder="🔍 Search equipment..." id="searchInput" style="width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px;" onkeyup="searchEquipment()">
+                </div>
+                <select id="typeFilter" style="padding: 12px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer;" onchange="filterEquipment()">
+                    <option value="">All Types</option>
+                    <option value="projector">Projector</option>
+                    <option value="cpu">CPU</option>
+                    <option value="battery">Battery</option>
+                </select>
+                <button class="btn btn-primary" onclick="openAddEquipmentModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Equipment
+                </button>
+            </div>
+
+            <!-- Equipment Table -->
+            <div class="equipment-table">
+                <div class="table-wrapper">
+                    <table id="equipmentTable">
+                        <thead>
+                            <tr>
+                                <th>Equipment ID</th>
+                                <th>Type</th>
+                                <th>Classroom</th>
+                                <th>Purchase Date</th>
+                                <th>Warranty Till</th>
+                                <th>Status</th>
+                                <th>Last Service</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="equipmentBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Add Equipment Modal -->
+    <div id="addEquipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Equipment</h2>
+                <button class="close-btn" onclick="closeModal('addEquipmentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addEquipmentForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-barcode"></i> Equipment ID</label>
+                        <input type="text" placeholder="e.g., PROJ001" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tools"></i> Equipment Type</label>
+                        <select required>
+                            <option>Projector</option>
+                            <option>CPU</option>
+                            <option>Battery</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-door-open"></i> Classroom</label>
+                        <input type="text" placeholder="e.g., A1L03" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Purchase Date</label>
+                        <input type="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-check"></i> Warranty Till</label>
+                        <input type="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clipboard"></i> Notes</label>
+                        <textarea placeholder="Additional details..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addEquipmentModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEquipment()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Equipment Modal -->
+    <div id="editEquipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Equipment</h2>
+                <button class="close-btn" onclick="closeModal('editEquipmentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editEquipmentForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-barcode"></i> Equipment ID</label>
+                        <input type="text" id="editEquipmentId" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-check-circle"></i> Status</label>
+                        <select id="editStatus" required>
+                            <option value="working">Working</option>
+                            <option value="not-working">Not Working</option>
+                            <option value="maintenance">Under Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Last Service Date</label>
+                        <input type="date" id="editLastService">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clipboard"></i> Notes</label>
+                        <textarea id="editNotes" placeholder="Additional details..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editEquipmentModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="updateEquipment()">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        if (!authSystem.isAuthenticated()) {
+            window.location.href = 'index.html';
+        }
+
+        const equipment = [
+            { id: 'PROJ001', type: 'projector', classroom: 'A1L03', purchaseDate: '2022-05-15', warrantyTill: '2025-05-15', status: 'working', lastService: '2024-12-10' },
+            { id: 'PROJ002', type: 'projector', classroom: 'A1L04', purchaseDate: '2022-06-20', warrantyTill: '2025-06-20', status: 'working', lastService: '2024-11-15' },
+            { id: 'PROJ003', type: 'projector', classroom: 'A2L05', purchaseDate: '2023-01-10', warrantyTill: '2026-01-10', status: 'not-working', lastService: '2024-08-05' },
+            { id: 'CPU001', type: 'cpu', classroom: 'A1L03', purchaseDate: '2021-03-12', warrantyTill: '2024-03-12', status: 'working', lastService: '2025-01-20' },
+            { id: 'CPU002', type: 'cpu', classroom: 'A1L04', purchaseDate: '2021-04-25', warrantyTill: '2024-04-25', status: 'working', lastService: '2025-01-15' },
+            { id: 'CPU003', type: 'cpu', classroom: 'A2L02', purchaseDate: '2022-07-18', warrantyTill: '2025-07-18', status: 'not-working', lastService: '2024-09-10' },
+            { id: 'BATT001', type: 'battery', classroom: 'A1L03', purchaseDate: '2024-01-15', warrantyTill: '2026-01-15', status: 'working', lastService: '2025-02-01' },
+            { id: 'BATT002', type: 'battery', classroom: 'A1L04', purchaseDate: '2024-02-20', warrantyTill: '2026-02-20', status: 'working', lastService: '2025-02-01' },
+            { id: 'BATT003', type: 'battery', classroom: 'B1L05', purchaseDate: '2023-11-10', warrantyTill: '2025-11-10', status: 'maintenance', lastService: '2024-12-28' },
+            { id: 'BATT004', type: 'battery', classroom: 'B1L04', purchaseDate: '2024-03-05', warrantyTill: '2026-03-05', status: 'working', lastService: null },
+            { id: 'BATT005', type: 'battery', classroom: 'C2L05', purchaseDate: '2023-10-15', warrantyTill: '2025-10-15', status: 'working', lastService: '2025-01-10' }
+        ];
+
+        localStorage.setItem('equipment', JSON.stringify(equipment));
+
+        function displayEquipment(data = equipment) {
+            const tbody = document.getElementById('equipmentBody');
+            tbody.innerHTML = data.map(eq => `
+                <tr>
+                    <td><strong>${eq.id}</strong></td>
+                    <td><i class="fas ${eq.type === 'projector' ? 'fa-video' : eq.type === 'cpu' ? 'fa-desktop' : 'fa-battery-full'}"></i> ${eq.type.toUpperCase()}</td>
+                    <td>${eq.classroom}</td>
+                    <td>${new Date(eq.purchaseDate).toLocaleDateString()}</td>
+                    <td>${new Date(eq.warrantyTill).toLocaleDateString()}</td>
+                    <td>
+                        <span class="status-badge ${eq.status === 'working' ? 'active' : eq.status === 'not-working' ? 'danger' : 'warning'}">
+                            <span class="status-dot"></span>
+                            ${eq.status.toUpperCase().replace('-', ' ')}
+                        </span>
+                    </td>
+                    <td>${eq.lastService ? new Date(eq.lastService).toLocaleDateString() : 'Never'}</td>
+                    <td>
+                        <button class="action-btn secondary" style="padding: 6px 12px; font-size: 12px;" onclick="editEquipment('${eq.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function searchEquipment() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = equipment.filter(eq => 
+                eq.id.toLowerCase().includes(query) ||
+                eq.classroom.toLowerCase().includes(query)
+            );
+            displayEquipment(filtered);
+        }
+
+        function filterEquipment() {
+            const type = document.getElementById('typeFilter').value;
+            const filtered = type ? equipment.filter(eq => eq.type === type) : equipment;
+            displayEquipment(filtered);
+        }
+
+        function filterByType(type) {
+            const filtered = equipment.filter(eq => eq.type === type);
+            displayEquipment(filtered);
+        }
+
+        function editEquipment(equipmentId) {
+            const eq = equipment.find(e => e.id === equipmentId);
+            if (eq) {
+                document.getElementById('editEquipmentId').value = eq.id;
+                document.getElementById('editStatus').value = eq.status;
+                document.getElementById('editLastService').value = eq.lastService || '';
+                document.getElementById('editEquipmentModal').dataset.equipmentId = equipmentId;
+                document.getElementById('editEquipmentModal').classList.add('show');
+            }
+        }
+
+        function updateEquipment() {
+            const equipmentId = document.getElementById('editEquipmentModal').dataset.equipmentId;
+            const eq = equipment.find(e => e.id === equipmentId);
+            if (eq) {
+                eq.status = document.getElementById('editStatus').value;
+                eq.lastService = document.getElementById('editLastService').value;
+                localStorage.setItem('equipment', JSON.stringify(equipment));
+                displayEquipment();
+                closeModal('editEquipmentModal');
+                showToast('Equipment updated successfully!', 'success');
+            }
+        }
+
+        function openAddEquipmentModal() {
+            document.getElementById('addEquipmentModal').classList.add('show');
+        }
+
+        function saveEquipment() {
+            showToast('Equipment added successfully!', 'success');
+            closeModal('addEquipmentModal');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        };
+
+        displayEquipment();
+    </script>
+</body>
+</html>
