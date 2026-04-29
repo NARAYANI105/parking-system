@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Parking System</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .section {
+            margin-top: 20px;
+        }
+
+        .direction {
+            padding: 8px;
+            margin: 5px;
+            cursor: pointer;
+            background: lightgray;
+            display: inline-block;
+        }
+
+        .slots {
+            display: grid;
+            grid-template-columns: repeat(5, 40px);
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .slot {
+            width: 40px;
+            height: 40px;
+        }
+
+        .free {
+            background-color: green;
+        }
+
+        .occupied {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Parking System</h1>
+
+<!-- Vehicle Selection -->
+<button onclick="showVehicle('two')">Two Wheeler</button>
+<button onclick="showVehicle('four')">Four Wheeler</button>
+
+<!-- Two Wheeler -->
+<div id="two" class="section hidden">
+    <h2>Two Wheeler</h2>
+
+    <div class="direction" onclick="showSlots('two','left')">Left</div>
+    <div class="direction" onclick="showSlots('two','right')">Right</div>
+    <div class="direction" onclick="showSlots('two','straight')">Straight</div>
+
+    <div id="twoSlots"></div>
+    <p id="twoResult"></p>
+</div>
+
+<!-- Four Wheeler -->
+<div id="four" class="section hidden">
+    <h2>Four Wheeler</h2>
+
+    <div class="direction" onclick="showSlots('four','left')">Left</div>
+    <div class="direction" onclick="showSlots('four','right')">Right</div>
+    <div class="direction" onclick="showSlots('four','straight')">Straight</div>
+
+    <div id="fourSlots"></div>
+    <p id="fourResult"></p>
+</div>
+
+<script>
+
+// slot data (different for each direction)
+const data = {
+    two: {
+        left: ["free","occupied","free","free","occupied"],
+        right: ["occupied","free","free","occupied","free"],
+        straight: ["free","free","occupied","occupied","free"]
+    },
+    four: {
+        left: ["occupied","occupied","free","free","free"],
+        right: ["free","occupied","free","occupied","free"],
+        straight: ["occupied","free","occupied","free","occupied"]
+    }
+};
+
+// show vehicle section
+function showVehicle(type){
+    document.getElementById("two").classList.add("hidden");
+    document.getElementById("four").classList.add("hidden");
+
+    document.getElementById(type).classList.remove("hidden");
+}
+
+// show slots based on direction
+function showSlots(vehicle, direction){
+    let slotsDiv = document.getElementById(vehicle + "Slots");
+    let result = document.getElementById(vehicle + "Result");
+
+    slotsDiv.innerHTML = "";
+    slotsDiv.className = "slots";
+
+    let slots = data[vehicle][direction];
+
+    let freeCount = 0;
+
+    slots.forEach(s => {
+        let div = document.createElement("div");
+        div.classList.add("slot", s);
+
+        if(s === "free") freeCount++;
+
+        slotsDiv.appendChild(div);
+    });
+
+    result.innerText = direction.toUpperCase() + " → Free Slots: " + freeCount;
+}
+
+</script>
+
+</body>
+</html>
